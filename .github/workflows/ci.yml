@@ -1,0 +1,28 @@
+# CI de cellid: compila Cell-ID y corre los tests.
+name: cellid
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Compilar y testear
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar dependencias (libtiff, zlib)
+        run: sudo apt-get update && sudo apt-get install -y libtiff-dev zlib1g-dev
+
+      - name: Compilar
+        run: make
+
+      - name: Tests
+        run: make test

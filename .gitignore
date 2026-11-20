@@ -1,0 +1,16 @@
+# Archivos generados al compilar
+*.o
+/cell
+ejercicios/*/test_vecinos
+
+# Salidas de los tests
+tests/salida/
+
+# Cell-ID escribe imágenes anotadas (.out.tif) junto a cada imagen de entrada
+*.out.tif
+
+# Python
+__pycache__/
+
+# Generado por bear para clangd (rutas propias de cada máquina)
+compile_commands.json
