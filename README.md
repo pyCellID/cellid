@@ -26,7 +26,7 @@ make test     # corre los tests
 `make test` corre:
 
 - `tests/test_smoke.sh`: Cell-ID encuentra las 25 células de una imagen sintética.
-- `tests/test_golden.sh`: `out_all` es idéntico, byte a byte, a la referencia guardada.
+- `tests/test_golden.sh`: `out_all` coincide con la referencia guardada (mismas filas y columnas; números con tolerancia relativa de 1e-5).
 - `tests/test_threshold.sh`: los umbrales de segmentación se calculan en doble precisión
   (detecta la versión con `float` de Cell-ID ≤ 1.4.6).
 

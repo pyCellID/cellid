@@ -54,11 +54,13 @@ Build the manual with `make docs` and open `docs/build/html/index.html`.
 | Test | What it checks |
 | --- | --- |
 | `tests/test_smoke.sh` | Cell-ID finds the 25 cells of the synthetic image |
-| `tests/test_golden.sh` | `out_all` is byte-for-byte identical to `tests/data/expected/out_all` |
+| `tests/test_golden.sh` | `out_all` matches `tests/data/expected/out_all` (same rows and columns, numbers within 1e-5) |
 | `tests/test_threshold.sh` | The segmentation thresholds are computed in double precision |
 
 If a change to `src/` is meant to change results, regenerate the reference with
 `./tests/test_golden.sh --update` and explain why in the commit message.
 
-The golden reference was generated with gcc 13 on x86-64 (Ubuntu 24.04), the same environment
-as the CI. Other compilers or platforms may produce tiny floating-point differences.
+Numbers are compared with a relative tolerance of 1e-5: the same binary can print a different
+last digit on different CPUs, because the math library chooses instructions at run time. Any
+real change in the segmentation is far larger than that. The CI is pinned to Ubuntu 24.04 so
+that the compiler does not change without notice.
