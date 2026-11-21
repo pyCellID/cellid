@@ -5,8 +5,8 @@
  * píxel (x, y) valen 1 y se compara con el valor esperado.
  * Los mismos casos se aplican a tu función y a la original de Cell-ID.
  */
-#include <stdio.h>
 #include "vecinos.h"
+#include <stdio.h>
 
 typedef int (*contador)(const int *, int, int, int, int, int);
 
@@ -20,19 +20,19 @@ typedef struct {
 
 static const caso CASOS[] = {
     /* 3x3, píxel central (1,1) */
-    {"todos los vecinos",       3, 3, {1,1,1, 1,0,1, 1,1,1}, 1, 1, 8},
-    {"sin vecinos",             3, 3, {0,0,0, 0,0,0, 0,0,0}, 1, 1, 0},
-    {"solo arriba",             3, 3, {0,1,0, 0,0,0, 0,0,0}, 1, 1, 1},
-    {"solo arriba-izquierda",   3, 3, {1,0,0, 0,0,0, 0,0,0}, 1, 1, 1},
-    {"solo izquierda",          3, 3, {0,0,0, 1,0,0, 0,0,0}, 1, 1, 1},
-    {"solo abajo",              3, 3, {0,0,0, 0,0,0, 0,1,0}, 1, 1, 1},
-    {"solo abajo-derecha",      3, 3, {0,0,0, 0,0,0, 0,0,1}, 1, 1, 1},
-    {"solo abajo-izquierda",    3, 3, {0,0,0, 0,0,0, 1,0,0}, 1, 1, 1},
-    {"fila de abajo completa",  3, 3, {0,0,0, 0,0,0, 1,1,1}, 1, 1, 3},
+    {"todos los vecinos", 3, 3, {1, 1, 1, 1, 0, 1, 1, 1, 1}, 1, 1, 8},
+    {"sin vecinos", 3, 3, {0, 0, 0, 0, 0, 0, 0, 0, 0}, 1, 1, 0},
+    {"solo arriba", 3, 3, {0, 1, 0, 0, 0, 0, 0, 0, 0}, 1, 1, 1},
+    {"solo arriba-izquierda", 3, 3, {1, 0, 0, 0, 0, 0, 0, 0, 0}, 1, 1, 1},
+    {"solo izquierda", 3, 3, {0, 0, 0, 1, 0, 0, 0, 0, 0}, 1, 1, 1},
+    {"solo abajo", 3, 3, {0, 0, 0, 0, 0, 0, 0, 1, 0}, 1, 1, 1},
+    {"solo abajo-derecha", 3, 3, {0, 0, 0, 0, 0, 0, 0, 0, 1}, 1, 1, 1},
+    {"solo abajo-izquierda", 3, 3, {0, 0, 0, 0, 0, 0, 1, 0, 0}, 1, 1, 1},
+    {"fila de abajo completa", 3, 3, {0, 0, 0, 0, 0, 0, 1, 1, 1}, 1, 1, 3},
     /* bordes de la imagen */
-    {"esquina (0,0)",           3, 3, {0,1,0, 1,1,0, 0,0,0}, 0, 0, 3},
-    {"borde inferior (1,2)",    3, 3, {0,0,0, 1,1,1, 1,0,1}, 1, 2, 5},
-    {"imagen de 1 píxel",       1, 1, {1},                   0, 0, 0},
+    {"esquina (0,0)", 3, 3, {0, 1, 0, 1, 1, 0, 0, 0, 0}, 0, 0, 3},
+    {"borde inferior (1,2)", 3, 3, {0, 0, 0, 1, 1, 1, 1, 0, 1}, 1, 2, 5},
+    {"imagen de 1 píxel", 1, 1, {1}, 0, 0, 0},
 };
 static const int N_CASOS = sizeof(CASOS) / sizeof(CASOS[0]);
 

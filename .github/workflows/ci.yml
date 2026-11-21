@@ -1,4 +1,5 @@
-# CI de cellid: compila Cell-ID y corre los tests.
+# CI de cellid: compila Cell-ID, corre los tests, revisa el formato
+# del código nuevo y construye el manual.
 name: cellid
 
 on:
@@ -13,16 +14,40 @@ permissions:
 jobs:
   build-and-test:
     name: Compilar y testear
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Descargar el código
         uses: actions/checkout@v7
 
-      - name: Instalar dependencias (libtiff, zlib)
-        run: sudo apt-get update && sudo apt-get install -y libtiff-dev zlib1g-dev
+      - name: Instalar dependencias
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libtiff-dev zlib1g-dev clang-format
 
       - name: Compilar
         run: make
 
       - name: Tests
         run: make test
+
+      - name: Formato del código nuevo
+        run: make format-check
+
+  docs:
+    name: Manual (Doxygen)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar Doxygen y Graphviz
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: Construir el manual
+        run: make docs
+
+      - name: Guardar el manual
+        uses: actions/upload-artifact@v7
+        with:
+          name: manual-html
+          path: docs/build/html

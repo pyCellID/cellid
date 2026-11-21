@@ -22,3 +22,12 @@ for t in truth:
     fl[mc.shape_mask(t["kind"], 11, np.radians(t["angle_deg"]), t["cx"], t["cy"], yy, xx)] = 3000
 tifffile.imwrite(DATA / "YFP_Position01_time01.tif", fl.astype(np.uint16))
 print("ok:", len(truth), "células")
+
+# Reference statistics for tests/test_threshold.sh (double precision)
+EXPECTED = DATA / "expected"
+EXPECTED.mkdir(exist_ok=True)
+img = bf.astype(np.float64)
+(EXPECTED / "bf_stats.txt").write_text(
+    "# Mean and standard deviation of tests/data/BF_Position01_time01.tif,\n"
+    "# computed in double precision with NumPy (population std, ddof=0).\n"
+    f"mean {img.mean():.10e}\nsd {img.std():.10e}\n")

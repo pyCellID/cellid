@@ -17,3 +17,7 @@ compile_commands.json
 
 # Indice de clangd (generado por el editor)
 .cache/
+
+# Doxygen output
+docs/build/
+tests/salida_golden/
