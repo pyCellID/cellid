@@ -1,4 +1,5 @@
 #include "vecinos.h"
+#include "stdbool.h"
 
 /*
  * EJERCICIO 1: completá esta función.
@@ -12,11 +13,32 @@
  *
  * Probala con:  make ejercicio1   (desde la raíz del repositorio)
  */
+
+/*
+* Adición: creo una función auxilizar valid_pos:
+* Devolverá ture si la posición está dentro de los límites
+*/
+static bool pos_valida(int x, int y, int xmax, int ymax){
+    return x >= 0 && x < xmax && y >= 0 && y < ymax;
+}
+
+
 int contar_vecinos(const int *d, int xmax, int ymax, int x, int y, int v)
 {
     int n = 0;
-
-    /* TODO: tu código acá */
-
+    
+    for (int dy = -1; dy <= 1; dy++){        /*fila*/
+        for (int dx = -1; dx <= 1; dx++){   /*columna*/
+            if (dx == 0 && dy == 0){
+                continue;
+            }
+            int vx = x + dx;
+            int vy = y + dy;
+            
+            if (pos_valida(vx, vy, xmax, ymax) && d[vy*xmax+vx]== v){
+                n++;
+            }
+        }
+    }
     return n;
 }
