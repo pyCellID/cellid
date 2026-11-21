@@ -1,0 +1,70 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite the original Cell-ID article
+  (preferred citation below) and, if relevant, this repository.
+title: "cellid: Cell-ID source code with build, tests and CI"
+type: software
+license: LGPL-2.1-only
+repository-code: "https://github.com/pyCellID/cellid"
+authors:
+  - name: "pyCellID developers"
+preferred-citation:
+  type: article
+  title: "Single-cell quantification of molecules and rates using open-source microscope-based cytometry"
+  authors:
+    - family-names: Gordon
+      given-names: Andrew
+    - family-names: Colman-Lerner
+      given-names: Alejandro
+    - family-names: Chin
+      given-names: Tina E.
+    - family-names: Benjamin
+      given-names: Kirsten R.
+    - family-names: Yu
+      given-names: Richard C.
+    - family-names: Brent
+      given-names: Roger
+  journal: "Nature Methods"
+  volume: 4
+  issue: 2
+  start: 175
+  end: 181
+  year: 2007
+  doi: "10.1038/nmeth1008"
+references:
+  - type: article
+    title: "rcell2: Microscopy-Based Cytometry in R"
+    authors:
+      - family-names: Méndez
+        given-names: Nicolás
+      - family-names: Beldorati
+        given-names: Germán
+      - family-names: Constantinou
+        given-names: Andreas
+      - family-names: Colman-Lerner
+        given-names: Alejandro
+    journal: "Current Protocols"
+    volume: 3
+    issue: 4
+    start: e726
+    year: 2023
+    doi: "10.1002/cpz1.726"
+  - type: article
+    title: "Using Cell-ID 1.4 with R for Microscope-Based Cytometry"
+    authors:
+      - family-names: Bush
+        given-names: Alan
+      - family-names: Chernomoretz
+        given-names: Ariel
+      - family-names: Yu
+        given-names: Richard
+      - family-names: Gordon
+        given-names: Andrew
+      - family-names: Colman-Lerner
+        given-names: Alejandro
+    journal: "Current Protocols in Molecular Biology"
+    volume: 100
+    start: "14.18.1"
+    end: "14.18.26"
+    year: 2012
+    doi: "10.1002/0471142727.mb1418s100"
