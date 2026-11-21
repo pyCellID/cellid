@@ -1,0 +1,34 @@
+# Doxygen configuration for cellid.
+# Only non-default settings are listed. Build with: make docs
+# Output: docs/build/html/index.html
+
+PROJECT_NAME           = "cellid"
+PROJECT_BRIEF          = "Cell-ID: cell segmentation and quantification for microscopy images"
+OUTPUT_DIRECTORY       = docs/build
+INPUT                  = README.md src
+FILE_PATTERNS          = *.c *.h
+USE_MDFILE_AS_MAINPAGE = README.md
+OPTIMIZE_OUTPUT_FOR_C  = YES
+
+# List every function, documented or not, so the manual is a map of the code
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# Call graphs (requires Graphviz)
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_GRAPH_MAX_NODES    = 40
+
+# Outputs: HTML for reading, XML for a future Sphinx/Breathe integration
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_XML           = YES
+
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_LOGFILE           = docs/build/doxygen-warnings.log

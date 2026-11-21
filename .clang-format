@@ -1,0 +1,12 @@
+# Formatting for NEW code (exercises, tests, new functions).
+# src/ has its own .clang-format that disables formatting, so the original
+# Cell-ID code is never reformatted.
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+BreakBeforeBraces: Linux
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+InsertBraces: true
+PointerAlignment: Right

@@ -23,9 +23,27 @@ make test     # corre los tests
 
 ## Tests
 
+`make test` corre:
+
 - `tests/test_smoke.sh`: Cell-ID encuentra las 25 células de una imagen sintética.
-- `tests/data/`: imágenes sintéticas con verdad conocida, generadas con
-  `tests/generar_datos.py`.
+- `tests/test_golden.sh`: `out_all` es idéntico, byte a byte, a la referencia guardada.
+- `tests/test_threshold.sh`: los umbrales de segmentación se calculan en doble precisión
+  (detecta la versión con `float` de Cell-ID ≤ 1.4.6).
+
+`make check-unchanged` verifica que `src/` compile al mismo código que `main`: sirve para
+comprobar que un cambio solo agrega documentación.
+
+Las imágenes de `tests/data/` y sus referencias se generan con `tests/generar_datos.py`.
+
+## Documentación
+
+`make docs` genera el manual en HTML con Doxygen (`docs/build/html/index.html`), con todas
+las funciones, sus gráficos de llamadas y la lista de errores conocidos (*Bug List*).
+Requiere `doxygen` y `graphviz`.
+
+## Cómo contribuir
+
+Ver `CONTRIBUTING.md`: estilo de código, documentación y tests.
 
 ## Ejercicios de C
 

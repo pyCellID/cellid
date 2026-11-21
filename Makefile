@@ -1,12 +1,16 @@
 # Makefile de cellid
 #
-#   make          compila el programa ./cell
-#   make test     compila y corre los tests
-#   make clean    borra lo compilado
+#   make                  build ./cell
+#   make test             build and run the tests
+#   make docs             build the HTML manual (docs/build/html/index.html)
+#   make check-unchanged  check that src/ compiles to the same code as main
+#   make format-check     check the formatting of new code (clang-format)
+#   make clean            remove build outputs
 #
 CC      ?= gcc
 CFLAGS  ?= -O2 -Wall -Wno-unused-variable -Wno-unused-but-set-variable
 LDLIBS   = -ltiff -lz -lm
+BASE    ?= origin/main
 
 SRC  = $(wildcard src/*.c)
 OBJ  = $(SRC:.c=.o)
@@ -19,8 +23,23 @@ src/%.o: src/%.c
 
 test: cell
 	./tests/test_smoke.sh
+	./tests/test_golden.sh
+	./tests/test_threshold.sh
 
-# Ejercicios de C (no forman parte de los tests del CI)
+docs:
+	mkdir -p docs/build
+	doxygen Doxyfile
+	@echo "Manual: docs/build/html/index.html"
+
+check-unchanged:
+	./tests/check_code_unchanged.sh $(BASE)
+
+# New code only: src/ is the original Cell-ID code and keeps its own format
+FORMAT_FILES = $(wildcard ejercicios/*/*.c ejercicios/*/*.h tests/*.c)
+format-check:
+	clang-format --dry-run --Werror $(FORMAT_FILES)
+
+# C exercises (not part of the CI tests)
 ejercicio1:
 	$(CC) -Wall -Wextra -g -o ejercicios/01_vecinos/test_vecinos \
 	    ejercicios/01_vecinos/test_vecinos.c ejercicios/01_vecinos/vecinos.c \
@@ -29,6 +48,6 @@ ejercicio1:
 
 clean:
 	rm -f cell src/*.o ejercicios/*/test_vecinos
-	rm -rf tests/salida
+	rm -rf tests/salida tests/salida_golden docs/build
 
-.PHONY: test clean ejercicio1
+.PHONY: test docs check-unchanged format-check clean ejercicio1

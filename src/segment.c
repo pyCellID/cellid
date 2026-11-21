@@ -2983,6 +2983,28 @@ float diff_fl_prev(int offx, int offy){
 
 
 /*************************************************************/
+/**
+ * @brief Traces the boundary of the cell labelled @p v.
+ *
+ * The boundary is made of background pixels touching the cell (an outer
+ * ring), not of cell pixels. Starting from (x, y) it moves left until it
+ * leaves the cell and takes the neighbouring background pixel with the most
+ * neighbours in the cell. Then it repeatedly moves to the unvisited
+ * 8-connected background pixel with the most neighbours in the cell (see
+ * neighboring_points()), backtracking at dead ends.
+ *
+ * The walk stops when the next point would be the first one, or at a dead end
+ * within one pixel of it. The first point is not repeated at the end: callers
+ * close the polygon by joining the last point to the first.
+ *
+ * In find_cells() (x, y) is the first pixel of the cell's contiguous region,
+ * which is its leftmost pixel (topmost among equals).
+ *
+ * @param x  Column of a pixel inside the cell.
+ * @param y  Row of a pixel inside the cell.
+ * @param v  Label of the cell in the global label array d.
+ * @return   Linked list of boundary points, or NULL if no boundary was found.
+ */
 struct point *make_boundary_list(int x, int y, int v){
 
   int xcur,ycur;
@@ -3146,6 +3168,24 @@ struct point *make_boundary_list(int x, int y, int v){
 }
 
 /*************************************************************/
+/**
+ * @brief Counts the 8-connected neighbours of pixel (x, y) labelled @p v.
+ *
+ * make_boundary_list() uses this count to choose the next boundary pixel.
+ * Reads the global label image d (row-major: pixel (x, y) is d[y*xmax + x])
+ * and the image size xmax, ymax.
+ *
+ * @param x  Column of the pixel.
+ * @param y  Row of the pixel.
+ * @param v  Label of the cell being traced (100 + cell index in find_cells()).
+ * @return   Number of neighbours labelled @p v, as counted by the code below.
+ *
+ * @bug In the row below, d[u3] is tested three times instead of d[u3],
+ *      d[u3+1] and d[u3-1]: the pixel below is counted three times and the two
+ *      lower diagonal neighbours are never counted. Present since Cell-ID 1.0.
+ *      Kept because it is the reference behaviour: fixing it changes the
+ *      contour of most cells. See ejercicios/01_vecinos.
+ */
 int neighboring_points(int x, int y, int v){
   //Count how many of the 8 neighboring points are equal to v.  If we leave
   //the image area, then count those non-pixels are not equal to v.
@@ -4121,6 +4161,21 @@ void background_level(int i_time){
   return;
 }
 /***********************************************************/
+/**
+ * @brief Computes the two segmentation thresholds from the bright-field image.
+ *
+ * Calculates the mean (mu) and the population standard deviation (sig) of all
+ * pixels of the current image and sets the global thresholds
+ * cut_low = mu - background_reject_factor * sig and
+ * cut_high = mu + background_reject_factor * sig.
+ * find_cells() labels pixels above cut_high as cell interior, pixels below
+ * cut_low as cell border, and the rest as background.
+ *
+ * @note Since Cell-ID 1.5.0 mu and sig are accumulated in double. Cell-ID
+ *       <= 1.4.6 used float, which shifts the thresholds slightly (relative
+ *       error ~3e-4 in sig) and changes the contour of ~6% of the cells.
+ *       tests/test_threshold.sh checks this precision.
+ */
 void calculate_cut(){
 //Calculates cut for the intensity level when finding cell borders.
 

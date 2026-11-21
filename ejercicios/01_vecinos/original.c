@@ -13,34 +13,50 @@ int original_neighboring_points(const int *d, int xmax, int ymax, int x, int y, 
 
     n = 0;
 
-    u1 = y*xmax + x;
+    u1 = y * xmax + x;
     u2 = u1 - xmax;
     u3 = u1 + xmax;
 
-    if ((x+1) < xmax) {
-        if (d[u1+1] == v) n++;
-    }
-    if ((x-1) >= 0) {
-        if (d[u1-1] == v) n++;
-    }
-
-    if ((y-1) >= 0) {
-        if (d[u2] == v) n++;
-        if ((x+1) < xmax) {
-            if (d[u2+1] == v) n++;
+    if ((x + 1) < xmax) {
+        if (d[u1 + 1] == v) {
+            n++;
         }
-        if ((x-1) >= 0) {
-            if (d[u2-1] == v) n++;
+    }
+    if ((x - 1) >= 0) {
+        if (d[u1 - 1] == v) {
+            n++;
         }
     }
 
-    if ((y+1) < ymax) {
-        if (d[u3] == v) n++;
-        if ((x+1) < xmax) {
-            if (d[u3] == v) n++;
+    if ((y - 1) >= 0) {
+        if (d[u2] == v) {
+            n++;
         }
-        if ((x-1) >= 0) {
-            if (d[u3] == v) n++;
+        if ((x + 1) < xmax) {
+            if (d[u2 + 1] == v) {
+                n++;
+            }
+        }
+        if ((x - 1) >= 0) {
+            if (d[u2 - 1] == v) {
+                n++;
+            }
+        }
+    }
+
+    if ((y + 1) < ymax) {
+        if (d[u3] == v) {
+            n++;
+        }
+        if ((x + 1) < xmax) {
+            if (d[u3] == v) {
+                n++;
+            }
+        }
+        if ((x - 1) >= 0) {
+            if (d[u3] == v) {
+                n++;
+            }
         }
     }
 
