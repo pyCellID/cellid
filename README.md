@@ -55,6 +55,7 @@ Ver `CONTRIBUTING.md`: estilo de código, documentación y tests.
 No forman parte del CI.
 
 - `01_vecinos`: reescribir `neighboring_points()` (`make ejercicio1`).
+- `02_umbral`: media y desvío de `calculate_cut()` en `float`, `double` y con el algoritmo de Welford (`make ejercicio2`).
 
 ## Problemas conocidos
 
