@@ -27,17 +27,19 @@ make test     # corre los tests
 
 ## Tests
 
-`make test` corre:
+```bash
+pip install --group test   # una vez (pip >= 25.1)
+make test                  # compila y corre la suite con pytest
+make coverage              # cobertura de src/ (build-cov/coverage.html)
+```
 
-- `tests/test_smoke.sh`: Cell-ID encuentra las 25 células de una imagen sintética.
-- `tests/test_golden.sh`: `out_all` coincide con la referencia guardada (mismas filas y columnas; números con tolerancia relativa de 1e-5).
-- `tests/test_threshold.sh`: los umbrales de segmentación se calculan en doble precisión
-  (detecta la versión con `float` de Cell-ID ≤ 1.4.6).
+La suite ejecuta `cell` desde afuera sobre imágenes sintéticas con verdad conocida y
+sobre imágenes de referencia. Incluye los errores conocidos como tests marcados
+`xfail` (fallos esperados). La organización y cómo escribir tests nuevos están en
+`CONTRIBUTING.md`.
 
 `make check-unchanged` verifica que `src/` compile al mismo código que `main`: sirve para
 comprobar que un cambio solo agrega documentación.
-
-Las imágenes de `tests/data/` y sus referencias se generan con `tests/generar_datos.py`.
 
 ## Documentación
 

@@ -1,4 +1,0 @@
-# Mean and standard deviation of tests/data/BF_Position01_time01.tif,
-# computed in double precision with NumPy (population std, ddof=0).
-mean 3.5645831888e+04
-sd 3.0035269370e+03
