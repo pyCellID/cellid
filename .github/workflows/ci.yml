@@ -1,5 +1,5 @@
-# CI de cellid: compila Cell-ID, corre los tests, revisa el formato
-# del código nuevo y construye el manual.
+# CI de cellid: compila Cell-ID, corre los tests (pytest), revisa el formato
+# del código nuevo, mide la cobertura y construye el manual.
 name: cellid
 
 on:
@@ -19,19 +19,58 @@ jobs:
       - name: Descargar el código
         uses: actions/checkout@v7
 
-      - name: Instalar dependencias
+      - name: Instalar dependencias del sistema
         run: |
           sudo apt-get update
           sudo apt-get install -y libtiff-dev zlib1g-dev clang-format
 
+      - name: Instalar Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar las dependencias de los tests
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --group test
+
       - name: Compilar
         run: make
 
-      - name: Tests
+      - name: Tests (pytest)
         run: make test
 
       - name: Formato del código nuevo
         run: make format-check
+
+  coverage:
+    name: Cobertura del código C
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar dependencias del sistema
+        run: sudo apt-get update && sudo apt-get install -y libtiff-dev zlib1g-dev
+
+      - name: Instalar Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar las dependencias de cobertura
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --group coverage
+
+      - name: Medir la cobertura
+        run: make coverage
+
+      - name: Guardar el informe
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-html
+          path: build-cov/*.html
 
   docs:
     name: Manual (Doxygen)

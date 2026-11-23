@@ -49,18 +49,48 @@ Build the manual with `make docs` and open `docs/build/html/index.html`.
 
 ## Tests
 
-`make test` runs:
+The test suite runs the `cell` executable from the outside, with pytest. Install its
+dependencies once (`pip install --group test`, pip >= 25.1), then run `make test`.
 
-| Test | What it checks |
+### Layout
+
+| Path | Contents |
 | --- | --- |
-| `tests/test_smoke.sh` | Cell-ID finds the 25 cells of the synthetic image |
-| `tests/test_golden.sh` | `out_all` matches `tests/data/expected/out_all` (same rows and columns, numbers within 1e-5) |
-| `tests/test_threshold.sh` | The segmentation thresholds are computed in double precision |
+| `tests/cellid_testing/synth.py` | Synthetic images with known ground truth (cells, bright field, fluorescence) |
+| `tests/cellid_testing/runner.py` | Writes images, lists and parameters, runs `cell`, returns a `Run` |
+| `tests/cellid_testing/outputs.py` | Readers for `out_all`, `out_bf_fl_mapping`, masks and the log |
+| `tests/cellid_testing/compare.py` | Table comparison with a numeric tolerance |
+| `tests/cellid_testing/matching.py` | Pairs found cells with synthetic cells |
+| `tests/conftest.py` | Fixtures: the `cell` binary (`$CELLID_BIN` or `./cell`) and `run` |
+| `tests/test_*.py` | The tests, one file per topic |
+| `tests/data/` | Stored reference images and the golden `out_all` |
 
-If a change to `src/` is meant to change results, regenerate the reference with
-`./tests/test_golden.sh --update` and explain why in the commit message.
+Every run happens in a temporary directory: tests never write into `tests/data`.
 
-Numbers are compared with a relative tolerance of 1e-5: the same binary can print a different
-last digit on different CPUs, because the math library chooses instructions at run time. Any
-real change in the segmentation is far larger than that. The CI is pinned to Ubuntu 24.04 so
-that the compiler does not change without notice.
+### Kinds of tests
+
+- **Ground truth**: synthetic images where the right answer is known (number of cells,
+  areas, exact fluorescence on flat images, tracking of shifted cells).
+- **Characterization**: document current behaviour that is surprising but not decided to
+  be wrong (for example, regions under 75 pixels are never found). Their docstring says why.
+- **Known bugs**: `@pytest.mark.xfail(strict=True, reason="Known bug: ...")`. They assert
+  the *correct* behaviour, so they fail today. `strict=True` makes them fail loudly if
+  they start passing: when a bug is fixed, remove the mark.
+- **Regression (golden)**: `out_all` on the stored images must match
+  `tests/data/expected/out_all`, numbers within a relative tolerance of 1e-5 (the same
+  binary can print a different last digit on different CPUs). If a change to `src/` is
+  meant to change results, run `python -m pytest --update-golden` and explain why in the
+  commit message.
+
+### Coverage
+
+`make coverage` builds an instrumented `cell` in `build-cov/`, runs the suite and writes
+`build-cov/coverage.html` (needs `pip install --group coverage`). The CI publishes the
+report as an artifact.
+
+### Writing a new test
+
+1. Build the input with `synth` (or load an image from `tests/data`).
+2. Run it with the `run` fixture: `result = run(images, bf_list, fl_list)`.
+3. Read the outputs with `outputs` and assert one property per test.
+4. Name the test after the behaviour it checks: `test_cells_touching_the_image_edge_are_discarded`.

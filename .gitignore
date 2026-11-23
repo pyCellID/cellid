@@ -22,3 +22,9 @@ compile_commands.json
 # Doxygen output
 docs/build/
 tests/salida_golden/
+
+# Python and coverage outputs
+.pytest_cache/
+build-cov/
+*.gcda
+*.gcno

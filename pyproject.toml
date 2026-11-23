@@ -1,0 +1,23 @@
+# This repository is a C project. This file only configures the Python test
+# suite (tests/), which runs the `cell` executable from the outside.
+#
+#   pip install --group test     # install the test dependencies (pip >= 25.1)
+#   make test                    # build and run the tests
+
+[dependency-groups]
+test = [
+    "pytest>=8",
+    "numpy",
+    "scipy",
+    "pandas",
+    "tifffile",
+]
+coverage = [
+    { include-group = "test" },
+    "gcovr",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+xfail_strict = true
