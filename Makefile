@@ -46,8 +46,14 @@ ejercicio1:
 	    ejercicios/01_vecinos/original.c
 	./ejercicios/01_vecinos/test_vecinos
 
+ejercicio2:
+	$(CC) -Wall -Wextra -g -o ejercicios/02_umbral/test_umbral \
+	    ejercicios/02_umbral/test_umbral.c ejercicios/02_umbral/umbral.c \
+	    ejercicios/02_umbral/original.c -lm
+	./ejercicios/02_umbral/test_umbral
+
 clean:
-	rm -f cell src/*.o ejercicios/*/test_vecinos
+	rm -f cell src/*.o ejercicios/*/test_vecinos ejercicios/*/test_umbral
 	rm -rf tests/salida tests/salida_golden docs/build
 
-.PHONY: test docs check-unchanged format-check clean ejercicio1
+.PHONY: test docs check-unchanged format-check clean ejercicio1 ejercicio2

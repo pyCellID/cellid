@@ -2,6 +2,7 @@
 *.o
 /cell
 ejercicios/*/test_vecinos
+ejercicios/*/test_umbral
 
 # Salidas de los tests
 tests/salida/
