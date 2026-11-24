@@ -66,6 +66,16 @@ jobs:
       - name: Medir la cobertura
         run: make coverage
 
+      - name: Resumen en la página de la ejecución
+        run: |
+          {
+            echo "## Cobertura de src/"
+            echo
+            echo "Informe completo, línea por línea: artefacto \`coverage-html\`."
+            echo
+            cat build-cov/coverage.md
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Guardar el informe
         uses: actions/upload-artifact@v7
         with:
