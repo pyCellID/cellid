@@ -34,7 +34,8 @@ coverage:
 	find build-cov -name '*.gcda' -delete
 	CELLID_BIN=build-cov/cell $(PYTHON) -m pytest -q
 	gcovr --root . --filter src/ --object-directory build-cov \
-	    --html-details build-cov/coverage.html --txt-summary --txt build-cov/coverage.txt
+	    --html-details build-cov/coverage.html --markdown build-cov/coverage.md \
+	    --txt-summary --txt build-cov/coverage.txt
 	@echo "Report: build-cov/coverage.html"
 
 docs:
