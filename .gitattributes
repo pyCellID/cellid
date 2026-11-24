@@ -1,0 +1,3 @@
+# Salidas de Cell-ID guardadas como referencia: se conservan exactamente,
+# con los espacios de relleno que escribe el programa
+tests/data/** -whitespace
