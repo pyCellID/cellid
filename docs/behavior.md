@@ -45,6 +45,7 @@ Versions compared: 1.0/1.1 (Nature Methods supplementary source), 1.4.6 (SourceF
 | B14 | `append_output` writes the header again, leaving a header line in the middle of `out_all` | `segment.c`, `output_cells_single_file()` | xfail | `test_outputs.py::test_append_output_keeps_a_single_header` |
 | B15 | Paths longer than 500 characters overflow a fixed buffer and Cell-ID aborts | `cell.c`, `max_strlen` | xfail | `test_robustness.py::test_long_paths_do_not_crash` |
 | B16 | An internal error path of the vacuole search calls `exit(0)`: Cell-ID would stop reporting success | `fl_dist.c`, `find_vacuole()` | documented | code reading |
+| B17 | When recombining, `vacuole_area` of the mother is added to itself instead of adding the bud's (`b1->vacuole_area += b1->vacuole_area`): it doubles | `segment.c`, `combine_cells_in_cs_array()` | xfail | `test_recombination.py::test_merged_vacuole_area_is_the_sum` |
 
 ### B01 — Neighbour count in `neighboring_points()`
 
@@ -142,6 +143,17 @@ into a fixed buffer, and the process is killed by a segmentation fault.
 | C45 | No alignment mode changes contours or shapes | `test_alignment.py::test_alignment_never_changes_the_geometry` |
 | C46 | `align_individual_cells_boundary` measures ~12% less fluorescence on uniformly fluorescent cells (probably meant for membrane signals) | experiment (see Q03) |
 
+### Recombination
+
+| ID | Behaviour | Evidence |
+| --- | --- | --- |
+| C90 | With `do_recombination` and `recombination_fl_per_a_nucleus <flag> <cut>`, a cell without nucleus (`f.nucl / a.nucl - f.bg < cut`) is merged into the neighbouring cell with a nucleus: areas, sums of fluorescence, annuli and volumes are added | `test_recombination.py::test_buds_without_nucleus_are_merged_into_their_mothers` |
+| C91 | The merged bud keeps its row and measurements; its `xpos` and `ypos` become `-999 - (mother's cellID)`. Analyses must drop these rows, or the bud is counted twice | `test_recombination.py::test_merged_buds_stay_in_the_table_marked_by_their_position` |
+| C92 | `perim` of a merged cell is the sum of both perimeters (including their shared boundary); position and shape statistics keep the mother's values | `test_recombination.py::test_merged_perimeter_is_the_sum_of_perimeters` |
+| C93 | `recombination_all_new_cells` treats every cell appearing after the first time point as a bud | `test_recombination.py::test_cells_that_appear_later_are_merged` |
+| C94 | Cells under 75 pixels are always considered buds (hard-coded `recombination_min_pixels`) | code |
+| C95 | The nucleus criterion uses `f.bg`, so it is affected by B03: on noise-free images (`f.bg = 0`) the same cell scores about 1000 higher | experiment |
+
 ### Outputs
 
 | ID | Behaviour | Evidence |
@@ -216,3 +228,5 @@ a new reference version, agreed with rcell2.
 | M16 | Remove the code no function calls (about 400 lines: `gauss_fit`, `gauss_gradients`, `neighbor_interpolation`, `calculate_volume_cone_old`, `search_data_for_number`, `get_median_deviations`, `circularize_points`, and the never-called contour clean-ups of C23) | — | No |
 | M17 | Report a vacuole only when it is significantly darker than the rest of the cell (and handle noise-free images) | C58 | Yes, vacuole columns |
 | M18 | Use non-zero exit codes on every error path | B16 | No |
+| M19 | Add the bud's vacuole area when recombining | B17 | Only recombined cells |
+| M20 | Recompute the contour, perimeter, position and shape of merged cells, and drop (or flag explicitly) the merged buds | C91, C92 | Yes, recombined cells |
