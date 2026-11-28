@@ -5,7 +5,7 @@
 PROJECT_NAME           = "cellid"
 PROJECT_BRIEF          = "Cell-ID: cell segmentation and quantification for microscopy images"
 OUTPUT_DIRECTORY       = docs/build
-INPUT                  = README.md src
+INPUT                  = README.md docs/behavior.md src
 FILE_PATTERNS          = *.c *.h
 USE_MDFILE_AS_MAINPAGE = README.md
 OPTIMIZE_OUTPUT_FOR_C  = YES

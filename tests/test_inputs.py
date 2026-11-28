@@ -32,7 +32,7 @@ def test_unknown_parameter_falls_back_to_the_default(run):
     assert outputs.logged_parameter(result.log, "background_reject_factor") == 3.0
 
 
-@pytest.mark.xfail(strict=True, reason="Known bug: unknown parameter names are silently ignored")
+@pytest.mark.xfail(strict=True, reason="Known bug B04 (docs/behavior.md): unknown parameter names are silently ignored")
 def test_unknown_parameter_is_reported(run):
     bf, fl = one_image()
     result = run({"BF.tif": bf, "FL.tif": fl}, ["BF.tif"], ["FL.tif"],
@@ -40,7 +40,7 @@ def test_unknown_parameter_is_reported(run):
     assert result.returncode != 0
 
 
-@pytest.mark.xfail(strict=True, reason="Known bug: a missing parameters file silently uses defaults")
+@pytest.mark.xfail(strict=True, reason="Known bug B05 (docs/behavior.md): a missing parameters file silently uses defaults")
 def test_missing_parameters_file_is_reported(run):
     bf, fl = one_image()
     result = run({"BF.tif": bf, "FL.tif": fl}, ["BF.tif"], ["FL.tif"], write_parameters_file=False)
@@ -49,7 +49,8 @@ def test_missing_parameters_file_is_reported(run):
 
 @pytest.mark.xfail(
     strict=True,
-    reason="Known bug: a new channel listed after a repeated one gets the flag of another channel",
+    reason="Known bug B02 (docs/behavior.md): a new channel listed after a repeated one "
+    "gets the flag of another channel",
 )
 def test_each_channel_gets_its_own_flag(run):
     bf, fl = one_image()
