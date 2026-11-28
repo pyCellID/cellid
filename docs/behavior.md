@@ -40,6 +40,9 @@ Versions compared: 1.0/1.1 (Nature Methods supplementary source), 1.4.6 (SourceF
 | B09 | About 20 variables "may be used uninitialized" (compiler warnings) | several files | documented | `make` with `-O2 -Wall` |
 | B10 | The month of the standard TIFF DateTime is read one too high: elapsed times are wrong across the end of a month (600 s become 87 000 s at the end of November, 259 800 s at the end of February) | `date_and_time.c`, `get_date_and_time()` | xfail | `test_time_mapping.py::test_elapsed_time_across_the_end_of_a_month` |
 | B11 | DateTime texts in other formats (MetaSeries writes `20191021 18:10:26.792`) are read as garbage without a warning; 600 s become 3600 s | `date_and_time.c`, `get_date_and_time()` | xfail | `test_time_mapping.py::test_non_standard_datetime_is_read_or_reported` |
+| B12 | The `-t` mask file lists `a.tot - 1` interior pixels per cell: the loop stops before the last list node | `segment.c`, `output_cells_single_file()` | xfail | `test_outputs.py::test_masks_list_every_interior_pixel` |
+| B13 | The help says `-l` is enabled by default; the code defaults it to off (without mask options `BF.out.tif` is 8-bit, with no cell numbers encoded) | `cell.c`, help text | documented | `test_outputs.py::test_annotated_image_is_8_bit_without_mask_options` |
+| B14 | `append_output` writes the header again, leaving a header line in the middle of `out_all` | `segment.c`, `output_cells_single_file()` | xfail | `test_outputs.py::test_append_output_keeps_a_single_header` |
 
 ### B01 — Neighbour count in `neighboring_points()`
 
@@ -135,6 +138,18 @@ into a fixed buffer, and the process is killed by a segmentation fault.
 | C45 | No alignment mode changes contours or shapes | `test_alignment.py::test_alignment_never_changes_the_geometry` |
 | C46 | `align_individual_cells_boundary` measures ~12% less fluorescence on uniformly fluorescent cells (probably meant for membrane signals) | experiment (see Q03) |
 
+### Outputs
+
+| ID | Behaviour | Evidence |
+| --- | --- | --- |
+| C70 | `-l` writes each contour in `BF.out.tif` with intensity `65535 - cellID - 1`: the same pixels as the contour in the `-t` mask file | `test_outputs.py::test_masks_boundary_is_the_contour_labelled_by_l` |
+| C71 | `-i` writes interior and contour with `65535 - cellID - 1`; with `-w` the interior is lowered by an offset (5000 by default) so it can be told from the contour | `test_outputs.py::test_fill_option_encodes_each_whole_cell`, `test_offset_option_separates_interior_from_contour` |
+| C72 | `-m` replaces the image by the masks: one value per cell plus the background | `test_outputs.py::test_mask_only_option_removes_the_image` |
+| C73 | The interior pixels of the masks include most contour pixels (60 of 78 on a synthetic circle), because the polygon runs through the contour pixels' centres (see C22) | experiment |
+| C74 | `paw_output` writes the same numbers as the R format, without header, split into six files | `test_outputs.py::test_paw_output_has_the_same_numbers` |
+| C75 | `output_individual_cells` writes a cropped 8-bit image per cell and per image into `cells/` | `test_outputs.py::test_individual_cell_images` |
+| C76 | `append_output` appends the new rows to an existing `out_all` | `test_outputs.py::test_append_output_adds_the_new_rows` |
+
 ### Nucleus and tracking
 
 | ID | Behaviour | Evidence |
@@ -179,3 +194,7 @@ a new reference version, agreed with rcell2.
 | M10 | Choose channels and flat images from explicit lists instead of file-name prefixes | C02, C03 | No |
 | M11 | Read the TIFF DateTime month as 1–12 | B10 | Only time-mapped runs across a month end |
 | M12 | Parse other DateTime formats (at least MetaSeries), or stop with a clear message | B11 | Only time-mapped runs with those images |
+| M13 | Write the last interior pixel in the `-t` mask file | B12 | Only the mask file |
+| M14 | Fix the help of `-l` (and `-D`/`-F`, B06) | B13 | No |
+| M15 | Do not repeat the header when appending | B14 | Only appended files |
+| M16 | Remove the code no function calls (about 400 lines: `gauss_fit`, `gauss_gradients`, `neighbor_interpolation`, `calculate_volume_cone_old`, `search_data_for_number`, `get_median_deviations`, `circularize_points`, and the never-called contour clean-ups of C23) | — | No |

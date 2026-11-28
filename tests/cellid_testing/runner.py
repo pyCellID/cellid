@@ -49,6 +49,7 @@ class Run:
     returncode: int
     workdir: Path
     log: str
+    binary: Path
 
     @property
     def out_all(self) -> Path:
@@ -128,4 +129,4 @@ def run_cellid(
            *extra_args]
     proc = subprocess.run(cmd, cwd=workdir, capture_output=True, text=True,
                           encoding="utf-8", errors="replace", timeout=300)
-    return Run(proc.returncode, workdir, proc.stdout + proc.stderr)
+    return Run(proc.returncode, workdir, proc.stdout + proc.stderr, Path(binary))
