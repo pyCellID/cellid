@@ -44,3 +44,9 @@ def logged_parameter(log: str, name: str) -> float:
     if match is None:
         raise ValueError(f"parameter {name!r} not found in the Cell-ID log")
     return float(match.group(1))
+
+
+def logged_offsets(log: str) -> list[tuple[int, int]]:
+    """Image offsets found by ``align_image()``, in the order Cell-ID reports them."""
+    found = re.findall(r"Offset for new fluorescence image=\((-?\d+),(-?\d+)\)", log)
+    return [(int(x), int(y)) for x, y in found]
