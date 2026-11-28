@@ -26,5 +26,6 @@ tests/salida_golden/
 # Python and coverage outputs
 .pytest_cache/
 build-cov/
+build-asan/
 *.gcda
 *.gcno

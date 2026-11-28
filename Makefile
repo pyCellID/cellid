@@ -3,6 +3,7 @@
 #   make                  build ./cell
 #   make test             build and run the tests (pytest)
 #   make coverage         line coverage of src/ by the tests (build-cov/coverage.html)
+#   make sanitize         the tests with AddressSanitizer and UBSan
 #   make docs             build the HTML manual (docs/build/html/index.html)
 #   make check-unchanged  check that src/ compiles to the same code as main
 #   make format-check     check the formatting of new code (clang-format)
@@ -38,6 +39,15 @@ coverage:
 	    --txt-summary --txt build-cov/coverage.txt
 	@echo "Report: build-cov/coverage.html"
 
+# The test suite with AddressSanitizer and UndefinedBehaviorSanitizer: a memory
+# error or undefined behaviour stops Cell-ID and fails the test that ran it.
+sanitize:
+	mkdir -p build-asan
+	$(CC) -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -w \
+	    -o build-asan/cell $(SRC) $(LDLIBS)
+	CELLID_BIN=build-asan/cell ASAN_OPTIONS=detect_leaks=0 \
+	    UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 $(PYTHON) -m pytest -q
+
 docs:
 	mkdir -p docs/build
 	doxygen Doxyfile
@@ -66,6 +76,6 @@ ejercicio2:
 
 clean:
 	rm -f cell src/*.o ejercicios/*/test_vecinos ejercicios/*/test_umbral
-	rm -rf tests/salida tests/salida_golden docs/build build-cov .pytest_cache
+	rm -rf tests/salida tests/salida_golden docs/build build-cov build-asan .pytest_cache
 
-.PHONY: test coverage docs check-unchanged format-check clean ejercicio1 ejercicio2
+.PHONY: test coverage sanitize docs check-unchanged format-check clean ejercicio1 ejercicio2

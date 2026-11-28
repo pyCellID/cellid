@@ -91,6 +91,13 @@ Every run happens in a temporary directory: tests never write into `tests/data`.
 `build-cov/coverage.html` (needs `pip install --group coverage`). The CI publishes the
 report as an artifact.
 
+### Memory checks
+
+`make sanitize` builds `cell` with AddressSanitizer and UndefinedBehaviorSanitizer in
+`build-asan/` and runs the suite with it: a memory error or undefined behaviour stops
+Cell-ID, and the test that ran it fails. Tests that expect a crash today check
+`result.crashed`, which also recognises sanitizer reports. The CI runs it in its own job.
+
 ### Writing a new test
 
 1. Build the input with `synth` (or load an image from `tests/data`).

@@ -52,7 +52,7 @@ def test_dark_given_as_an_image_does_not_crash(run, scene):
     shape, bf, fl = scene
     images = {"BF.tif": bf, "YFP_t1.tif": fl.astype(np.uint16), "DARK.tif": synth.flat(shape, 100)}
     result = run(images, ["BF.tif"], ["YFP_t1.tif"], extra_args=("-D", "DARK.tif"))
-    assert result.returncode >= 0  # a negative code means the process was killed by a signal
+    assert not result.crashed
 
 
 def gradients(shape):
