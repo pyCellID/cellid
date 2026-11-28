@@ -88,6 +88,7 @@ def run_cellid(
     parameters: dict | None = None,
     check_parameters: bool = True,
     write_parameters_file: bool = True,
+    text_files: dict[str, str] | None = None,
     extra_args: tuple[str, ...] = (),
 ) -> Run:
     """Run Cell-ID in ``workdir``.
@@ -103,11 +104,15 @@ def run_cellid(
         check_parameters: refuse unknown parameter names.
         write_parameters_file: write ``parameters.txt``; ``False`` runs Cell-ID
             with a parameters file that does not exist.
+        text_files: file name -> text, for extra inputs such as the dark and
+            flat image lists (``-D``, ``-F``).
         extra_args: additional command-line options, e.g. ``("-t",)``.
     """
     workdir.mkdir(parents=True, exist_ok=True)
     for name, array in images.items():
         tifffile.imwrite(workdir / name, array)
+    for name, text in (text_files or {}).items():
+        (workdir / name).write_text(text)
     (workdir / "bf.txt").write_text("\n".join(bf) + "\n")
     (workdir / "fl.txt").write_text("\n".join(fl) + "\n")
     if write_parameters_file:
