@@ -44,6 +44,7 @@ Versions compared: 1.0/1.1 (Nature Methods supplementary source), 1.4.6 (SourceF
 | B13 | The help says `-l` is enabled by default; the code defaults it to off (without mask options `BF.out.tif` is 8-bit, with no cell numbers encoded) | `cell.c`, help text | documented | `test_outputs.py::test_annotated_image_is_8_bit_without_mask_options` |
 | B14 | `append_output` writes the header again, leaving a header line in the middle of `out_all` | `segment.c`, `output_cells_single_file()` | xfail | `test_outputs.py::test_append_output_keeps_a_single_header` |
 | B15 | Paths longer than 500 characters overflow a fixed buffer and Cell-ID aborts | `cell.c`, `max_strlen` | xfail | `test_robustness.py::test_long_paths_do_not_crash` |
+| B16 | An internal error path of the vacuole search calls `exit(0)`: Cell-ID would stop reporting success | `fl_dist.c`, `find_vacuole()` | documented | code reading |
 
 ### B01 — Neighbour count in `neighboring_points()`
 
@@ -160,6 +161,11 @@ into a fixed buffer, and the process is killed by a segmentation fault.
 | C50 | The nucleus position is found exactly for small nuclei; `f.nucl` is the sum within 4 pixels (49 pixels, `a.nucl`) | `test_nucleus.py` |
 | C51 | A nucleus larger than the search disc gives a plateau of equal sums; the first position in scan order (topmost) is kept, so `ypos.nucl` can be one pixel off | experiment |
 | C52 | Cells moved a few pixels between time points keep their number | `test_tracking.py` |
+| C54 | With a third image and `third_image nuclear_label`, the nucleus is placed where the third image is brightest, whatever the fluorescence image shows | `test_internal_structure.py::test_third_image_locates_the_nucleus` |
+| C55 | `third_image vacuole_label` also locates the nucleus from the third image, the same way (see Q04) | `test_internal_structure.py::test_third_image_locates_the_nucleus` |
+| C56 | With a nuclear label, `f.nucl.tag1` to `f.nucl.tag6` measure the third image around the nucleus (`f.nucl.tag1` within 2 pixels); `f.nucl` keeps measuring the fluorescence image | `test_internal_structure.py::test_tag_columns_measure_the_third_image` |
+| C57 | `treat_brightfield_as_fluorescence_also` measures the bright field as one more channel, exactly as if given as a fluorescence image, once per time point and with its own flag | `test_internal_structure.py::test_bright_field_can_be_measured_as_a_channel`, `test_bright_field_channel_once_per_time_point` |
+| C58 | The vacuole is the darkest contiguous region inside the cell. On noise-free images none is found, even with a dark region; with noise, one is always reported, also in cells without a vacuole (14–55 false pixels); a dark disc of 81 pixels is reported with 85–135 | `test_internal_structure.py` (three tests) |
 | C53 | On the real time course, 87 of 97 cells keep their number through 3 time points | `test_real_data.py::test_most_cells_are_tracked_through_the_time_course` |
 
 ### Memory checks
@@ -183,6 +189,7 @@ into a fixed buffer, and the process is killed by a segmentation fault.
 | Q01 | On real images, which step modifies the bright-field image before `calculate_cut()`? | The loader returns the image intact (1222 zero pixels), but the threshold excludes only 540 and the mean matches no simple variant |
 | Q02 | Where does the orientation dependence (C33) come from? | Not from B01; the scan-line polygon fill (`y + 0.1`) is a candidate |
 | Q03 | What is `align_individual_cells_boundary` meant for? | Lowers the signal of uniformly filled cells (C46) |
+| Q04 | What does `third_image vacuole_label` change, besides locating the nucleus from the third image (C55)? | The vacuole columns did not change in our experiments |
 
 ## Proposed improvements
 
@@ -207,3 +214,5 @@ a new reference version, agreed with rcell2.
 | M14 | Fix the help of `-l` (and `-D`/`-F`, B06) | B13 | No |
 | M15 | Do not repeat the header when appending | B14 | Only appended files |
 | M16 | Remove the code no function calls (about 400 lines: `gauss_fit`, `gauss_gradients`, `neighbor_interpolation`, `calculate_volume_cone_old`, `search_data_for_number`, `get_median_deviations`, `circularize_points`, and the never-called contour clean-ups of C23) | — | No |
+| M17 | Report a vacuole only when it is significantly darker than the rest of the cell (and handle noise-free images) | C58 | Yes, vacuole columns |
+| M18 | Use non-zero exit codes on every error path | B16 | No |
