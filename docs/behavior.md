@@ -38,6 +38,8 @@ Versions compared: 1.0/1.1 (Nature Methods supplementary source), 1.4.6 (SourceF
 | B07 | Lists of more than 1000 images are written past the end of fixed arrays | `cell.c`, `max_files` | documented | code reading |
 | B08 | `calculate_cut()` squares pixels in float before converting to double and stores the SD as float; one-pass formula gives NaN on large, nearly equal values | `segment.c`, `calculate_cut()` | documented | exercise `02_umbral` |
 | B09 | About 20 variables "may be used uninitialized" (compiler warnings) | several files | documented | `make` with `-O2 -Wall` |
+| B10 | The month of the standard TIFF DateTime is read one too high: elapsed times are wrong across the end of a month (600 s become 87 000 s at the end of November, 259 800 s at the end of February) | `date_and_time.c`, `get_date_and_time()` | xfail | `test_time_mapping.py::test_elapsed_time_across_the_end_of_a_month` |
+| B11 | DateTime texts in other formats (MetaSeries writes `20191021 18:10:26.792`) are read as garbage without a warning; 600 s become 3600 s | `date_and_time.c`, `get_date_and_time()` | xfail | `test_time_mapping.py::test_non_standard_datetime_is_read_or_reported` |
 
 ### B01 — Neighbour count in `neighboring_points()`
 
@@ -60,6 +62,19 @@ unused number. Listing `YFP_t1, CFP_t1, YFP_t2, RFP_t2` gives flags 0, 1, 0, 1: 
 CFP share flag 1 and cannot be told apart in `out_all`. With the usual order (all
 channels in every time point, always in the same order) it does not happen.
 
+### B10 and B11 — Acquisition times
+
+Images without the MetaMorph private tag are dated from the standard TIFF DateTime tag,
+parsed by fixed character positions. The code adds 1 to the month, with the comment "Does
+months as 0 to 11", but the TIFF standard uses 1–12: November 30 becomes "December 30"
+and December 1 "month 13". Within a month the error cancels out; across the end of a
+month (except December to January) the elapsed time is wrong.
+
+Any other text format is read at the same fixed positions. The lab's images, written by
+MetaSeries, store `20191021 18:10:26.792` (no colons, milliseconds) and their processed
+bright-field images have no DateTime at all, so time mapping cannot work on them: they
+must be processed with `bf_fl_mapping list`, which is what rcell2 does.
+
 ### B06 — Dark and flat options
 
 The help describes `-D <path>` as "a 'dark' image", but the code opens it as a text list
@@ -72,7 +87,7 @@ into a fixed buffer, and the process is killed by a segmentation fault.
 
 | ID | Behaviour | Evidence |
 | --- | --- | --- |
-| C01 | Without `bf_fl_mapping list`, images are paired by MetaMorph acquisition time; in list mode, line *n* of each list goes together and `time` is written as 0 | code; lists of different length exit with code 3 (`test_inputs.py::test_lists_of_different_length_are_rejected`) |
+| C01 | Without `bf_fl_mapping list`, fluorescence images are sorted by acquisition time and paired with the closest bright-field image; `time` is the elapsed seconds. In list mode, line *n* of each list goes together and `time` is written as 0 | `test_time_mapping.py`; lists of different length exit with code 3 (`test_inputs.py::test_lists_of_different_length_are_rejected`) |
 | C02 | The channel (`flag`) of a fluorescence image is decided by the first three letters of its file name | code; B02; `test_real_data.py::test_each_channel_keeps_its_flag_in_every_time_point` |
 | C03 | A flat image is used only for fluorescence images whose names start with the same three letters; otherwise it is ignored with one log line | `test_corrections.py::test_flat_needs_the_same_name_prefix` |
 | C04 | A dark image is used for fluorescence images with the same exposure time; images without that metadata all report -999 and therefore match | code; `test_corrections.py::test_dark_image_is_subtracted` |
@@ -162,3 +177,5 @@ a new reference version, agreed with rcell2.
 | M08 | Square in double, or use a more robust variance algorithm, in `calculate_cut()` | B08 | Possibly, slightly |
 | M09 | Initialise the variables flagged by the compiler | B09 | Should not |
 | M10 | Choose channels and flat images from explicit lists instead of file-name prefixes | C02, C03 | No |
+| M11 | Read the TIFF DateTime month as 1–12 | B10 | Only time-mapped runs across a month end |
+| M12 | Parse other DateTime formats (at least MetaSeries), or stop with a clear message | B11 | Only time-mapped runs with those images |

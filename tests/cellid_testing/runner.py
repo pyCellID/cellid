@@ -96,7 +96,9 @@ def run_cellid(
     Args:
         binary: path to the ``cell`` executable.
         workdir: directory for inputs and outputs (normally a pytest ``tmp_path``).
-        images: file name -> 2-D array to write as a 16-bit TIFF.
+        images: file name -> 2-D array to write as a 16-bit TIFF, or a tuple
+            ``(array, options)`` with keyword arguments for ``tifffile.imwrite``
+            (for example ``{"datetime": ...}`` for the acquisition time).
         bf: bright-field file names, one per line of the list (repeat a name to
             use it for several fluorescence images).
         fl: fluorescence file names, same length as ``bf`` for list mapping.
@@ -109,8 +111,11 @@ def run_cellid(
         extra_args: additional command-line options, e.g. ``("-t",)``.
     """
     workdir.mkdir(parents=True, exist_ok=True)
-    for name, array in images.items():
-        tifffile.imwrite(workdir / name, array)
+    for name, image in images.items():
+        # An image is an array, or (array, tifffile.imwrite keyword arguments)
+        # to write metadata such as the acquisition time.
+        array, options = image if isinstance(image, tuple) else (image, {})
+        tifffile.imwrite(workdir / name, array, **options)
     for name, text in (text_files or {}).items():
         (workdir / name).write_text(text)
     (workdir / "bf.txt").write_text("\n".join(bf) + "\n")
