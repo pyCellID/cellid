@@ -8,6 +8,9 @@
 - **Documentation first, changes later.** Documenting `src/` must not change the compiled
   code. Check it with `make check-unchanged`.
 - **Every change goes through a branch and a pull request**, with the CI green before merging.
+- **Every finding goes to `docs/behavior.md`**: bugs (`B`), characterized behaviour (`C`), open
+  questions (`Q`) and proposed improvements (`M`), each with the evidence that supports it.
+  Known-bug tests quote the identifier in their `xfail` reason.
 
 ## Language
 

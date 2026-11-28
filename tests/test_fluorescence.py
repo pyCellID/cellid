@@ -43,7 +43,8 @@ def test_background_with_noise(run):
 
 @pytest.mark.xfail(
     strict=True,
-    reason="Known bug: background_level() returns 0 when all background pixels are equal",
+    reason="Known bug B03 (docs/behavior.md): background_level() returns 0 when all "
+    "background pixels are equal",
 )
 def test_background_of_a_uniform_image(run):
     table = measure(run, lambda shape: synth.flat(shape, VALUE))

@@ -59,7 +59,13 @@ No forman parte del CI.
 - `01_vecinos`: reescribir `neighboring_points()` (`make ejercicio1`).
 - `02_umbral`: media y desvío de `calculate_cut()` en `float`, `double` y con el algoritmo de Welford (`make ejercicio2`).
 
-## Problemas conocidos
+## Comportamiento y problemas conocidos
+
+`docs/behavior.md` reúne todo lo que se sabe del comportamiento de Cell-ID: errores, comportamientos
+sorprendentes, preguntas abiertas y mejoras propuestas, cada uno con la evidencia o el test que lo respalda.
+También aparece en el manual (`make docs`).
+
+### Error principal
 
 - `neighboring_points()` (`src/segment.c`) no cuenta los vecinos diagonales de la fila
   de abajo y cuenta tres veces el de abajo. Está presente desde la versión 1.0 y afecta el

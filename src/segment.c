@@ -3184,7 +3184,8 @@ struct point *make_boundary_list(int x, int y, int v){
  *      d[u3+1] and d[u3-1]: the pixel below is counted three times and the two
  *      lower diagonal neighbours are never counted. Present since Cell-ID 1.0.
  *      Kept because it is the reference behaviour: fixing it changes the
- *      contour of most cells. See ejercicios/01_vecinos.
+ *      contour of most cells. Entry B01 of docs/behavior.md; see also
+ *      ejercicios/01_vecinos.
  */
 int neighboring_points(int x, int y, int v){
   //Count how many of the 8 neighboring points are equal to v.  If we leave

@@ -45,7 +45,7 @@ def test_dark_image_is_subtracted(run, scene):
 
 @pytest.mark.xfail(
     strict=True,
-    reason="Known bug: -D expects a list of images, but its help describes an image path; "
+    reason="Known bug B06 (docs/behavior.md): -D expects a list of images, but its help describes an image path; "
     "given an image, Cell-ID reads the TIFF as text and crashes",
 )
 def test_dark_given_as_an_image_does_not_crash(run, scene):
