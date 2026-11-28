@@ -52,6 +52,15 @@ class Run:
     binary: Path
 
     @property
+    def crashed(self) -> bool:
+        """True if Cell-ID was killed by a signal or a sanitizer reported an error.
+
+        A clean failure (an error message and a positive exit code) is not a crash.
+        """
+        markers = ("ERROR: AddressSanitizer", "runtime error:", "buffer overflow detected")
+        return self.returncode < 0 or any(m in self.log for m in markers)
+
+    @property
     def out_all(self) -> Path:
         return self.workdir / "out_all"
 
@@ -97,7 +106,8 @@ def run_cellid(
     Args:
         binary: path to the ``cell`` executable.
         workdir: directory for inputs and outputs (normally a pytest ``tmp_path``).
-        images: file name -> 2-D array to write as a 16-bit TIFF, or a tuple
+        images: file name (may include subdirectories) -> 2-D array to write as
+            a 16-bit TIFF, ``bytes`` to write as they are, or a tuple
             ``(array, options)`` with keyword arguments for ``tifffile.imwrite``
             (for example ``{"datetime": ...}`` for the acquisition time).
         bf: bright-field file names, one per line of the list (repeat a name to
@@ -113,10 +123,15 @@ def run_cellid(
     """
     workdir.mkdir(parents=True, exist_ok=True)
     for name, image in images.items():
+        path = workdir / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if isinstance(image, bytes):  # raw content, e.g. a file that is not a TIFF
+            path.write_bytes(image)
+            continue
         # An image is an array, or (array, tifffile.imwrite keyword arguments)
         # to write metadata such as the acquisition time.
         array, options = image if isinstance(image, tuple) else (image, {})
-        tifffile.imwrite(workdir / name, array, **options)
+        tifffile.imwrite(path, array, **options)
     for name, text in (text_files or {}).items():
         (workdir / name).write_text(text)
     (workdir / "bf.txt").write_text("\n".join(bf) + "\n")

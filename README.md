@@ -31,6 +31,7 @@ make test     # corre los tests
 pip install --group test   # una vez (pip >= 25.1)
 make test                  # compila y corre la suite con pytest
 make coverage              # cobertura de src/ (build-cov/coverage.html)
+make sanitize              # la suite con AddressSanitizer y UBSan
 ```
 
 La suite ejecuta `cell` desde afuera sobre imágenes sintéticas con verdad conocida y

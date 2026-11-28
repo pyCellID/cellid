@@ -84,6 +84,30 @@ jobs:
           name: coverage-html
           path: build-cov/*.html
 
+  sanitizers:
+    name: Tests con sanitizers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar dependencias del sistema
+        run: sudo apt-get update && sudo apt-get install -y libtiff-dev zlib1g-dev
+
+      - name: Instalar Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar las dependencias de los tests
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --group test
+
+      - name: Tests con AddressSanitizer y UBSan
+        run: make sanitize
+
   docs:
     name: Manual (Doxygen)
     runs-on: ubuntu-24.04

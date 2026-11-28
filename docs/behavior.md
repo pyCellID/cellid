@@ -35,7 +35,7 @@ Versions compared: 1.0/1.1 (Nature Methods supplementary source), 1.4.6 (SourceF
 | B04 | Unknown parameter names are silently ignored; defaults are used | `cell.c`, parameter parsing | xfail | `test_inputs.py::test_unknown_parameter_is_reported` |
 | B05 | A missing parameters file silently uses all defaults | `cell.c`, parameter parsing | xfail | `test_inputs.py::test_missing_parameters_file_is_reported` |
 | B06 | `-D` (and `-F`) expect a list of images, but the help says an image; given an image, Cell-ID reads the TIFF as text and crashes | `cell.c`, dark/flat lists and help | xfail | `test_corrections.py::test_dark_given_as_an_image_does_not_crash` |
-| B07 | Lists of more than 1000 images are written past the end of fixed arrays | `cell.c`, `max_files` | documented | code reading |
+| B07 | Lists of more than 1000 images are written past the end of fixed arrays; with 1001 images Cell-ID aborts | `cell.c`, `max_files` | xfail | `test_robustness.py::test_more_than_1000_images_do_not_crash` |
 | B08 | `calculate_cut()` squares pixels in float before converting to double and stores the SD as float; one-pass formula gives NaN on large, nearly equal values | `segment.c`, `calculate_cut()` | documented | exercise `02_umbral` |
 | B09 | About 20 variables "may be used uninitialized" (compiler warnings) | several files | documented | `make` with `-O2 -Wall` |
 | B10 | The month of the standard TIFF DateTime is read one too high: elapsed times are wrong across the end of a month (600 s become 87 000 s at the end of November, 259 800 s at the end of February) | `date_and_time.c`, `get_date_and_time()` | xfail | `test_time_mapping.py::test_elapsed_time_across_the_end_of_a_month` |
@@ -43,6 +43,7 @@ Versions compared: 1.0/1.1 (Nature Methods supplementary source), 1.4.6 (SourceF
 | B12 | The `-t` mask file lists `a.tot - 1` interior pixels per cell: the loop stops before the last list node | `segment.c`, `output_cells_single_file()` | xfail | `test_outputs.py::test_masks_list_every_interior_pixel` |
 | B13 | The help says `-l` is enabled by default; the code defaults it to off (without mask options `BF.out.tif` is 8-bit, with no cell numbers encoded) | `cell.c`, help text | documented | `test_outputs.py::test_annotated_image_is_8_bit_without_mask_options` |
 | B14 | `append_output` writes the header again, leaving a header line in the middle of `out_all` | `segment.c`, `output_cells_single_file()` | xfail | `test_outputs.py::test_append_output_keeps_a_single_header` |
+| B15 | Paths longer than 500 characters overflow a fixed buffer and Cell-ID aborts | `cell.c`, `max_strlen` | xfail | `test_robustness.py::test_long_paths_do_not_crash` |
 
 ### B01 — Neighbour count in `neighboring_points()`
 
@@ -94,7 +95,9 @@ into a fixed buffer, and the process is killed by a segmentation fault.
 | C02 | The channel (`flag`) of a fluorescence image is decided by the first three letters of its file name | code; B02; `test_real_data.py::test_each_channel_keeps_its_flag_in_every_time_point` |
 | C03 | A flat image is used only for fluorescence images whose names start with the same three letters; otherwise it is ignored with one log line | `test_corrections.py::test_flat_needs_the_same_name_prefix` |
 | C04 | A dark image is used for fluorescence images with the same exposure time; images without that metadata all report -999 and therefore match | code; `test_corrections.py::test_dark_image_is_subtracted` |
-| C05 | Image paths cannot contain spaces (`fscanf("%s")` splits them) | code |
+| C05 | Image paths cannot contain spaces: the lists are read word by word, so the first word cannot be opened (exit code 4) | `test_robustness.py::test_paths_with_spaces_are_split` |
+| C06 | Clean failures have their own exit codes: 3 lists of different length, 4 image that cannot be opened (missing, not a TIFF), 6 images of different size, 7 output that cannot be written | `test_robustness.py`, `test_inputs.py` |
+| C07 | Empty image lists are not an error: `out_all` has only the header | `test_robustness.py::test_empty_lists_give_an_empty_table` |
 
 ### Segmentation (`find_cells()`)
 
@@ -159,6 +162,12 @@ into a fixed buffer, and the process is killed by a segmentation fault.
 | C52 | Cells moved a few pixels between time points keep their number | `test_tracking.py` |
 | C53 | On the real time course, 87 of 97 cells keep their number through 3 time points | `test_real_data.py::test_most_cells_are_tracked_through_the_time_course` |
 
+### Memory checks
+
+| ID | Behaviour | Evidence |
+| --- | --- | --- |
+| C80 | The whole test suite runs without any AddressSanitizer or UndefinedBehaviorSanitizer report: the code paths it exercises have no detected memory errors (memory leaks are not checked) | `make sanitize` (CI job "Tests con sanitizers") |
+
 ### Differences between versions
 
 | ID | Behaviour | Evidence |
@@ -186,7 +195,7 @@ a new reference version, agreed with rcell2.
 | M02 | Report unknown parameter names and a missing parameters file | B04, B05 | No |
 | M03 | Give a new channel the next unused flag | B02 | Only where B02 occurs |
 | M04 | Return the background value when it is uniform | B03 | Only on uniform backgrounds |
-| M05 | Bounds checks or dynamic arrays for image lists and file names | B06, B07 | No |
+| M05 | Bounds checks or dynamic arrays for image lists and file names | B06, B07, B15 | No |
 | M06 | Accept an image or a list in `-D`/`-F`, and fix the help | B06 | No |
 | M07 | Turn the hard-coded constants into parameters, defaulting to the current values | C12 | No |
 | M08 | Square in double, or use a more robust variance algorithm, in `calculate_cut()` | B08 | Possibly, slightly |
